@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import axios from 'axios';
+import { Alert, Button, Container, Form } from 'react-bootstrap';
 
 const SignUp = () =>{
     const [id,setId] = useState('');
@@ -11,53 +12,59 @@ const SignUp = () =>{
     const [passwordError,setPasswordError] = useState(false);
     const [termError,setTermError] = useState(false);
     const [gender, setGender] = useState('');
-    const [age, setAge] = useState('');
+    const [birth, setBirth] = useState('');
+    const [email, setEmail] = useState('');
 
     const history = useNavigate();
     
     // axios 임시
-    //  const onSubmit = async (e) => {
-    //     e.preventDefault();
-    //     /**검증 로직 만들기
-    //      * 1. 비밀번호와 비밀번호 체크가 다를 경우를 검증한다
-    //      * 2. 약관 동의를 확인한다.
-    //      */
-    //     if(password !== passwordCheck){
-    //         return setPasswordError(true);
-    //     }
-    //     if(!term){
-    //         return setTermError(true);
-    //     }
-    //     console.log({
-    //         id,
-    //         nick,
-    //         password,
-    //         passwordCheck,
-    //         gender,
-    //         age,
-    //         term
-    //     });
-    //     try {
-    //         const response = await axios.post('http://localhost:8080/api/signup', {
-    //           id,
-    //           nick,
-    //           password,
-    //           gender,
-    //           age,
-    //         });
+     const onSubmit = async (e) => {
+        e.preventDefault();
+        /**검증 로직 만들기
+         * 1. 비밀번호와 비밀번호 체크가 다를 경우를 검증한다
+         * 2. 약관 동의를 확인한다.
+         */
+        if(password !== passwordCheck){
+            return setPasswordError(true);
+        }
+        if(!term){
+            return setTermError(true);
+        }
+        console.log({
+            id,
+            password,
+            passwordCheck,
+            name,
+            gender,
+            birth,
+            email,
+            term
+        });
+        try {
+            const response = await axios.post('http://localhost:8080/user/join', {
+              id,
+              password,
+              name,
+              birth,
+              email,
+              gender
+            });
       
-    //         if (response.data.success) {
-    //           sessionStorage.setItem('user', JSON.stringify(response.data.user));
-    //           history.push('/login');
-    //         } else {
-    //           alert('Signup failed');
-    //         }
-    //       } catch (error) {
-    //         console.error('Signup error:', error);
-    //         alert("회원가입 오류!")
-    //       }
-    // }; 
+            if (response.data.success) {
+              sessionStorage.setItem('user', JSON.stringify(response.data.user));
+              history.push('/');
+            } else {
+              alert('Signup failed');
+            }
+          } catch (error) {
+            console.error('Signup error:', error);
+            alert("회원가입 오류!")
+          }
+    }; 
 
+
+    // 세션 스토리지에 회원가입 정보 저장
+    /*
     const onSubmit = (e) => {
         e.preventDefault();
 
@@ -73,17 +80,16 @@ const SignUp = () =>{
             password,
             passwordCheck,
             gender,
-            age,
+            birth,
             term
         });
 
-        sessionStorage.setItem('user', JSON.stringify({ id, password, name, gender, age }));
+        sessionStorage.setItem('user', JSON.stringify({ id, password, name, gender, email }));
 
         if(sessionStorage.getItem("user") != null) {
            history('/');
         }
-        
-    }
+    } */
 
     // Coustom Hook 이전
     const onChangeId = (e) => {
@@ -110,56 +116,104 @@ const SignUp = () =>{
         setGender(e.target.value)
     }
 
-    const onChangeAge = (e) => {
-        setAge(e.target.value)
+    const onChangeBirth = (e) => {
+        setBirth(e.target.value)
+    }
+
+    const onChangeEmail = (e) => {
+        setEmail(e.target.value)
     }
 
     return (
-        <>
-        <form onSubmit={onSubmit} style={{padding:10}}>
-            <div>
-                <label htmlFor="user-id">아이디</label><br/>
-                <input name="user-id" value={id} required onChange={onChangeId} />
-            </div>
-            <div>
-                <label htmlFor="user-name">닉네임</label><br/>
-                <input name="user-name" value={name} required onChange={onChangeName} />
-            </div>
-            <div>
-                <label htmlFor="user-password">비밀번호</label><br/>
-                <input name="user-password" type="password" value={password} required onChange={onChangePassword} />
-            </div>
-            <div>
-                <label htmlFor="user-password-check">비밀번호체크</label><br/>
-                <input name="user-password-check" type="password" value={passwordCheck} required onChange={onChangePasswordChk} />
-                {passwordError && <div style={{color : 'red'}}>비밀번호가 일치하지 않습니다.</div>}
-            </div>
-            <div>
-                <label htmlFor='gender'>성별</label><br/>
-                <select name='gender' value={gender} onChange={onChangeGender}>
-                    <option value="male">남성</option>
-                    <option value="female">여성</option>
-                </select>
-            </div>
-            <div>
-                <label htmlFor='age'>나이</label><br/>
-                <input type='number' name='age' onChange={onChangeAge} required></input>
-            </div>
-            <div>
-                <input type='checkbox' name="user-term" value={term} onChange={onChangeTerm} />동의 합니까?
-                {termError && <div style={{color : 'red'}}>약관에 동의하셔야 합니다.</div>}
-            </div>
-            <div style={{marginTop:10}}>
-                <button type="primary" htmltype="submit" >가입하기</button>
-            </div>
-        </form>
-        <div>
-            <Link to='/'>
-                <button>홈으로 돌아가기</button>
+        <Container>
+          <h1>Sign Up</h1>
+          <Form onSubmit={onSubmit}>
+            <Form.Group>
+              <Form.Label htmlFor="user_id">아이디</Form.Label>
+              <Form.Control name="user_id" value={id} required onChange={onChangeId} />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label htmlFor="user_pw">비밀번호</Form.Label>
+              <Form.Control
+                name="user_pw"
+                type="password"
+                value={password}
+                required
+                onChange={onChangePassword}
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label htmlFor="user-password-check">비밀번호체크</Form.Label>
+              <Form.Control
+                name="user-password-check"
+                type="password"
+                value={passwordCheck}
+                required
+                onChange={onChangePasswordChk}
+              />
+              {passwordError && (
+                <Alert variant="danger">비밀번호가 일치하지 않습니다.</Alert>
+              )}
+            </Form.Group>
+            <Form.Group>
+              <Form.Label htmlFor="user_name">이름</Form.Label>
+              <Form.Control name="user_name" value={name} required onChange={onChangeName} />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label htmlFor="user_birth">나이</Form.Label>
+              <Form.Control
+                type="date"
+                name="user_birth"
+                value={birth}
+                onChange={onChangeBirth}
+                required
+              ></Form.Control>
+            </Form.Group>
+            <Form.Group>
+              <Form.Label htmlFor="user_email">이메일</Form.Label>
+              <Form.Control
+                type="email"
+                name="user_email"
+                value={email}
+                onChange={onChangeEmail}
+                required
+              ></Form.Control>
+            </Form.Group>
+            <Form.Group>
+              <Form.Label htmlFor="user_gender">성별</Form.Label>
+              <Form.Control
+                as="select"
+                name="user_gender"
+                value={gender}
+                onChange={onChangeGender}
+              >
+                <option value="male">남성</option>
+                <option value="female">여성</option>
+              </Form.Control>
+            </Form.Group>
+            <Form.Group>
+              <Form.Check
+                type="checkbox"
+                name="user-term"
+                value={term}
+                onChange={onChangeTerm}
+                label="동의 합니까?"
+              />
+              {termError && (
+                <Alert variant="danger">약관에 동의하셔야 합니다.</Alert>
+              )}
+            </Form.Group>
+            <Button type="primary" htmltype="submit">
+              가입하기
+            </Button>
+          </Form>
+          <div style={{ marginTop: 10 }}>
+            <Link to="/">
+              <Button>홈으로 돌아가기</Button>
             </Link>
-        </div>
-        </>
-    );
-};
+          </div>
+        </Container>
+      );
+    };
 
 export default SignUp;

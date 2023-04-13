@@ -1,5 +1,14 @@
 import React, {useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
+import {
+	Container,
+	Row,
+	Col,
+	Form,
+	Button,
+	Nav,
+	ButtonGroup,
+} from "react-bootstrap";
 import axios from "axios";
 
 const Login = () => {
@@ -31,8 +40,7 @@ const Login = () => {
           }
     }; */
 
-
-    // sessionStorage에 저장된 내용을 storedUser에 저장
+	// sessionStorage에 저장된 내용을 storedUser에 저장
 	const storedUser = sessionStorage.getItem("user");
 	let storedName = "";
 
@@ -49,22 +57,22 @@ const Login = () => {
 			if (id === storedId && password === storedPassword) {
 				setIsLoggedIn(true);
 				history("/");
-			}else {
-                alert('ID 혹은 비밀번호가 틀립니다.')
-            }
+			} else {
+				alert("ID 혹은 비밀번호가 틀립니다.");
+			}
 		} else {
-            alert('해당 사용자가 존재하지 않습니다.')
-        }
+			alert("해당 사용자가 존재하지 않습니다.");
+		}
 	};
 
-    //로그아웃시 sessionStorage에 저장된 내용 삭제
-    const handleLogout = () => {
-        sessionStorage.removeItem('user');
-        setIsLoggedIn(false);
-        history('/');
-        setId('');
-        setPassword('');
-    }
+	//로그아웃시 sessionStorage에 저장된 내용 삭제
+	const handleLogout = () => {
+		sessionStorage.removeItem("user");
+		setIsLoggedIn(false);
+		history("/");
+		setId("");
+		setPassword("");
+	};
 
 	const onChangeId = (e) => {
 		setId(e.target.value);
@@ -75,47 +83,66 @@ const Login = () => {
 	};
 
 	return (
-		<div>
+		<Container className="justify-content-end">
 			{isLoggedIn ? (
-				<div>
-                    <div> Hello, {storedName}</div>
-                    <button type="button" onClick={handleLogout}>로그아웃</button>
-                    <Link to='/Update'>
-                        <button type="button">정보수정</button>
-                    </Link>
-                </div>
+				<Row className="justify-content-end">
+					<Col xs="auto">
+						<div>Hello, {storedName}</div>
+						<ButtonGroup className="mt-2">
+						<Button variant="primary" onClick={handleLogout} className="me-2">
+							로그아웃
+						</Button>
+						<Nav>
+							<Link to="/Update">
+								<Button variant="primary">정보수정</Button>
+							</Link>
+						</Nav>
+						</ButtonGroup>
+					</Col>
+				</Row>
 			) : (
-				<div>
-					<form onSubmit={onSubmit}>
-						<label htmlFor="id">ID : </label>
-						<input
-							type="text"
-							name="id"
-							value={id}
-							onChange={onChangeId}
-							required></input>{" "}
-						<br />
-						<label htmlFor="password">P/W : </label>
-						<input
-							type="password"
-							name="password"
-							value={password}
-							onChange={onChangePassword}
-							required></input>
-						<div style={{marginTop: 10}}>
-							<button type="primary" htmltype="submit">
-								로그인
-							</button>
-						</div>
-					</form>
-					<div>
-						<Link to="/SignUp">
-							<button>회원가입</button>
-						</Link>
-					</div>
-				</div>
+				<Row className="justify-content-end">
+					<Col xs="auto">
+						<Form onSubmit={onSubmit}>
+							<Row>
+								<Col xs="auto">
+									<Form.Group controlId="formId">
+										<Form.Label>ID :</Form.Label>
+										<Form.Control
+											type="text"
+											name="id"
+											value={id}
+											onChange={onChangeId}
+											required
+										/>
+									</Form.Group>
+								</Col>
+								<Col xs="auto">
+									<Form.Group controlId="formPassword">
+										<Form.Label>P/W :</Form.Label>
+										<Form.Control
+											type="password"
+											name="password"
+											value={password}
+											onChange={onChangePassword}
+											required
+										/>
+									</Form.Group>
+								</Col>
+							</Row>
+							<ButtonGroup className="mt-2">
+								<Button variant="primary" type="submit" className="me-5">
+									로그인
+								</Button>
+								<Link to="/SignUp">
+									<Button variant="primary">회원가입</Button>
+								</Link>
+							</ButtonGroup>
+						</Form>
+					</Col>
+				</Row>
 			)}
-		</div>
+		</Container>
 	);
 };
 
